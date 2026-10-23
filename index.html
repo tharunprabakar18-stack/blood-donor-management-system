@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LifeDrop - Clean Blood Donor & Medical Inventory Management</title>
+  <meta name="description" content="LifeDrop is a clean, professional healthcare blood donor registry and laboratory inventory tracking system with blood-group tiles, indicative eligibility calculation, and low-stock alerts.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Reassuring Academic / Clinical Simulation Disclaimer Banner -->
+  <div class="simulation-disclaimer-bar">
+    <div class="disclaimer-inner">
+      <span class="disclaimer-badge">DEMONSTRATION SYSTEM</span>
+      <p>All donor records, blood inventory counts, and eligibility calculations are simulated for software demonstration and academic training purposes only. Not real-time clinical blood-bank supplies or certified medical clearance.</p>
+    </div>
+  </div>
+
+  <!-- App Wrapper -->
+  <div class="lifedrop-app">
+
+    <!-- Top Medical Header -->
+    <header class="lifedrop-header">
+      <div class="header-inner">
+        
+        <div class="header-left">
+          <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle navigation menu">
+            <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+              <path d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+
+          <div class="brand-wrap">
+            <div class="brand-drop-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+              </svg>
+            </div>
+            <div class="brand-info">
+              <h1>Life<span>Drop</span></h1>
+              <p>Blood Donor & Transfusion Registry</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Right Actions -->
+        <div class="header-actions">
+          <div class="clinic-date-badge">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <span id="currentDateDisplay">Oct 23, 2026</span>
+          </div>
+
+          <button class="btn btn-secondary-crimson" id="btnExportCSV">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            <span>Export CSV</span>
+          </button>
+
+          <button class="btn btn-crimson" id="btnOpenRecordDonation">
+            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.2" fill="none">
+              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+            </svg>
+            <span>+ Record Donation</span>
+          </button>
+
+          <button class="btn btn-crimson-dark" id="btnOpenRegisterDonor">
+            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2.2" fill="none">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="8.5" cy="7" r="4"/>
+              <line x1="20" y1="8" x2="20" y2="14"/>
+              <line x1="23" y1="11" x2="17" y2="11"/>
+            </svg>
+            <span>+ Register Donor</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Healthcare Navigation Bar -->
+      <nav class="sub-nav-bar" id="subNavBar">
+        <div class="nav-links">
+          <button class="nav-tab active" data-tab="dashboard" id="tabDashboard">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+              <rect x="3" y="3" width="7" height="9" rx="1"/>
+              <rect x="14" y="3" width="7" height="5" rx="1"/>
+              <rect x="14" y="12" width="7" height="9" rx="1"/>
+              <rect x="3" y="16" width="7" height="5" rx="1"/>
+            </svg>
+            <span>Clinical Dashboard</span>
+          </button>
+
+          <button class="nav-tab" data-tab="donors" id="tabDonors">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <span>Donor Registry</span>
+            <span class="tab-badge" id="badgeDonorCount">0</span>
+          </button>
+
+          <button class="nav-tab" data-tab="inventory" id="tabInventory">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            </svg>
+            <span>Blood Stock Inventory</span>
+            <span class="tab-badge badge-crimson" id="badgeLowStockCount">0 Alerts</span>
+          </button>
+
+          <button class="nav-tab" data-tab="history" id="tabHistory">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>Donation Events Log</span>
+          </button>
+
+          <button class="nav-tab" data-tab="compatibility" id="tabCompatibility">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <span>Transfusion Compatibility</span>
+          </button>
+        </div>
+
+        <div class="nav-extra">
+          <button class="btn-subtle" id="btnResetDemoData" title="Reset sample records">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+              <path d="M21 3v5h-5"/>
+              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+              <path d="M8 16H3v5"/>
+            </svg>
+            <span>Reset Demo Data</span>
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <!-- Main Content Workspace -->
+    <main class="lifedrop-main">
+
+      <!-- Critical Low-Stock Warning Alert Ribbon (Hidden when all safe) -->
+      <section class="low-stock-alert-banner hidden" id="lowStockAlertBanner">
+        <div class="alert-icon-circle">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <div class="alert-text-block">
+          <h4>Blood Bank Stock Alert: Critical Reserve Level</h4>
+          <p id="lowStockAlertMsg">One or more blood groups are below the safety buffer of 5 units. Please organize targeted donor intake.</p>
+        </div>
+        <button class="btn btn-secondary-crimson btn-sm" onclick="switchTab('inventory')">Review Inventory</button>
+      </section>
+
+      <!-- KPI Summary Strip -->
+      <section class="kpi-strip">
+        <div class="kpi-card">
+          <div class="kpi-icon-wrap icon-crimson">
+            <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+            </svg>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-label">Registered Donors</span>
+            <h3 class="kpi-val" id="kpiTotalDonors">0</h3>
+            <span class="kpi-sub">Active in registry</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon-wrap icon-green">
+            <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-label">Eligible Today</span>
+            <h3 class="kpi-val text-green" id="kpiEligibleDonors">0</h3>
+            <span class="kpi-sub">Passed 56-day rest cycle</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon-wrap icon-drop">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+            </svg>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-label">Total Units in Stock</span>
+            <h3 class="kpi-val text-crimson" id="kpiTotalUnits">0</h3>
+            <span class="kpi-sub" id="kpiUnitsBreakdown">Across 8 Blood Groups</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon-wrap icon-amber">
+            <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="kpi-info">
+            <span class="kpi-label">Donation Events</span>
+            <h3 class="kpi-val text-amber" id="kpiTotalDonations">0</h3>
+            <span class="kpi-sub">Total procedures logged</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panes -->
+      <div class="tab-panes">
+
+        <!-- ======================================================== -->
+        <!-- VIEW 1: CLINICAL DASHBOARD & BLOOD-GROUP TILES           -->
+        <!-- ======================================================== -->
+        <section class="tab-pane active" id="view-dashboard">
+          
+          <!-- Blood Group Inventory Tiles Section -->
+          <div class="section-box mb-4">
+            <div class="section-box-header">
+              <div>
+                <h2 class="section-title">Blood Group Inventory Tiles</h2>
+                <p class="section-subtitle">Real-time stock indicators across all 8 ABO/Rh blood groups &bull; Click any tile to filter donors</p>
+              </div>
+              <div class="tile-legend">
+                <span class="legend-chip"><span class="dot dot-safe"></span> Healthy Stock (&ge; 6 units)</span>
+                <span class="legend-chip"><span class="dot dot-low"></span> Low Buffer (&le; 5 units)</span>
+              </div>
+            </div>
+
+            <!-- 8 Blood Group Tiles Grid -->
+            <div class="blood-group-grid" id="bloodGroupTilesGrid">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+
+          <!-- Split Grid: Donor Directory Preview & Recent Donations Stream -->
+          <div class="dash-split-grid">
+            
+            <!-- Left Side: Recent Active Donors -->
+            <div class="section-box">
+              <div class="section-box-header">
+                <div>
+                  <h3 class="box-title">Recent Donor Intakes</h3>
+                  <p class="section-subtitle">Donors recently registered or updated</p>
+                </div>
+                <button class="btn btn-secondary-crimson btn-sm" onclick="switchTab('donors')">View All Donors</button>
+              </div>
+
+              <div class="recent-donors-stream" id="dashRecentDonorsStream">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- Right Side: Recent Donation Event Activity -->
+            <div class="section-box">
+              <div class="section-box-header">
+                <div>
+                  <h3 class="box-title">Clinical Donation History Stream</h3>
+                  <p class="section-subtitle">Latest units collected at phlebotomy stations</p>
+                </div>
+                <button class="btn btn-secondary-crimson btn-sm" onclick="switchTab('history')">View Log</button>
+              </div>
+
+              <div class="recent-events-stream" id="dashRecentEventsStream">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- VIEW 2: DONOR REGISTRY & CARDS                           -->
+        <!-- ======================================================== -->
+        <section class="tab-pane" id="view-donors">
+          
+          <div class="section-box">
+            <div class="section-box-header flex-wrap">
+              <div>
+                <h2 class="section-title">Verified Blood Donor Registry</h2>
+                <p class="section-subtitle">Search registered donors, check indicative eligibility rest cycles, and filter by blood group</p>
+              </div>
+              <div class="flex-align-gap">
+                <button class="btn btn-secondary-crimson btn-sm" id="btnTogglePrivacyMask">
+                  <span id="privacyMaskIcon">&#128065;</span>
+                  <span id="privacyMaskLabel">Toggle Contact Masking</span>
+                </button>
+                <button class="btn btn-crimson btn-sm" onclick="openRegisterDonorModal()">
+                  <span>+ Register Donor</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Donor Filter Toolbar -->
+            <div class="toolbar-healthcare">
+              <div class="search-input-wrap flex-1">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="m21 21-4.3-4.3"/>
+                </svg>
+                <input type="text" id="donorSearchInput" placeholder="Search by donor name, Donor ID, city, or email...">
+              </div>
+
+              <div class="toolbar-selects">
+                <select id="filterBloodGroup" class="med-select">
+                  <option value="ALL">All Blood Groups</option>
+                  <option value="A+">A Positive (A+)</option>
+                  <option value="A-">A Negative (A-)</option>
+                  <option value="B+">B Positive (B+)</option>
+                  <option value="B-">B Negative (B-)</option>
+                  <option value="AB+">AB Positive (AB+)</option>
+                  <option value="AB-">AB Negative (AB-)</option>
+                  <option value="O+">O Positive (O+)</option>
+                  <option value="O-">O Negative (O-)</option>
+                </select>
+
+                <select id="filterEligibility" class="med-select">
+                  <option value="ALL">All Eligibility States</option>
+                  <option value="ELIGIBLE">Eligible to Donate (56+ Days)</option>
+                  <option value="RESTING">Resting Cycle (Waiting Period)</option>
+                </select>
+
+                <select id="sortDonorsBy" class="med-select">
+                  <option value="name_asc">Sort: Name (A-Z)</option>
+                  <option value="recent_donation">Sort: Recent Donation</option>
+                  <option value="blood_group">Sort: Blood Group</option>
+                  <option value="id_desc">Sort: Newest ID</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Donors Grid Display (Card Style) -->
+            <div class="donors-cards-grid" id="donorsCardsGrid">
+              <!-- Injected via JavaScript -->
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state-card hidden" id="donorsEmptyState">
+              <div class="empty-icon">&#128148;</div>
+              <h3>No Donors Found</h3>
+              <p>No donor records match the selected blood group filter or search criteria.</p>
+              <button class="btn btn-secondary-crimson btn-sm" id="btnResetDonorFilters">Reset Filters</button>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- VIEW 3: BLOOD STOCK INVENTORY & ADJUSTMENT               -->
+        <!-- ======================================================== -->
+        <section class="tab-pane" id="view-inventory">
+          
+          <div class="section-box">
+            <div class="section-box-header flex-wrap">
+              <div>
+                <h2 class="section-title">Blood Inventory & Cold-Chain Stock</h2>
+                <p class="section-subtitle">Sample whole-blood units by group with minimum buffer safety threshold (5 units)</p>
+              </div>
+              <div class="flex-align-gap">
+                <span class="disclaimer-badge">SIMULATED INVENTORY DATA</span>
+              </div>
+            </div>
+
+            <!-- Inventory Table -->
+            <div class="table-responsive">
+              <table class="lifedrop-table">
+                <thead>
+                  <tr>
+                    <th>Blood Group</th>
+                    <th>Type Description</th>
+                    <th>Units in Stock</th>
+                    <th>Stock Health Level</th>
+                    <th>Registered Donors</th>
+                    <th>Universal Compatibility</th>
+                    <th class="text-right">Simulate Stock</th>
+                  </tr>
+                </thead>
+                <tbody id="inventoryTableBody">
+                  <!-- Injected via JavaScript -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Inventory Advisory Box -->
+            <div class="medical-advisory-box mt-3">
+              <div class="advisory-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="16" x2="12" y2="12"/>
+                  <line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+              </div>
+              <div>
+                <strong>Whole Blood Storage & Shelf-Life Protocol:</strong>
+                <p>Standard whole blood units are stored in refrigerated cold-chain units at 2&deg;C to 6&deg;C with a maximum CPDA-1 storage viability of 35 days. Minimum reserve threshold in this demo is set to 5 units per blood type.</p>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- VIEW 4: DONATION EVENTS LOG                              -->
+        <!-- ======================================================== -->
+        <section class="tab-pane" id="view-history">
+          
+          <div class="section-box">
+            <div class="section-box-header flex-wrap">
+              <div>
+                <h2 class="section-title">Donation Events History Log</h2>
+                <p class="section-subtitle">Chronological ledger of completed donor collection events and units banked</p>
+              </div>
+              <button class="btn btn-crimson btn-sm" onclick="openRecordDonationModal()">
+                <span>+ Log New Donation</span>
+              </button>
+            </div>
+
+            <div class="table-responsive">
+              <table class="lifedrop-table">
+                <thead>
+                  <tr>
+                    <th>Donation Ref</th>
+                    <th>Donor Name</th>
+                    <th>Blood Group</th>
+                    <th>Units Collected</th>
+                    <th>Donation Center</th>
+                    <th>Vitals / Clinical Notes</th>
+                    <th>Donation Date</th>
+                  </tr>
+                </thead>
+                <tbody id="eventsTableBody">
+                  <!-- Injected via JavaScript -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="empty-state-card hidden" id="eventsEmptyState">
+              <div class="empty-icon">&#128197;</div>
+              <h3>No Donation Events Logged</h3>
+              <p>No donation events have been recorded yet. Click "+ Record Donation" to log an intake.</p>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- ======================================================== -->
+        <!-- VIEW 5: TRANSFUSION COMPATIBILITY MATRIX                 -->
+        <!-- ======================================================== -->
+        <section class="tab-pane" id="view-compatibility">
+          
+          <div class="section-box">
+            <div class="section-box-header">
+              <div>
+                <h2 class="section-title">Transfusion Compatibility Reference Guide</h2>
+                <p class="section-subtitle">Medical donor-to-recipient red blood cell (RBC) compatibility standards</p>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="lifedrop-table compatibility-table">
+                <thead>
+                  <tr>
+                    <th>Blood Type</th>
+                    <th>Can Give Red Blood Cells To</th>
+                    <th>Can Receive Red Blood Cells From</th>
+                    <th>Key Clinical Note</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="blood-tile-mini">O-</span></td>
+                    <td><strong>All Blood Types</strong> (Universal RBC Donor)</td>
+                    <td><span class="badge-type">O- only</span></td>
+                    <td><span class="text-crimson font-bold">Universal Donor:</span> Critical for emergency room trauma patients when blood type is unknown.</td>
+                  </tr>
+                  <tr>
+                    <td><span class="blood-tile-mini">O+</span></td>
+                    <td>O+, A+, B+, AB+</td>
+                    <td>O+, O-</td>
+                    <td>Most common blood type worldwide; highest clinical demand in scheduled surgeries.</td>
+                  </tr>
+                  <tr>
+                    <td><span class="blood-tile-mini">A-</span></td>
+                    <td>A-, A+, AB-, AB+</td>
+                    <td>A-, O-</td>
+                    <td>Compatible with Rh-negative and Rh-positive A and AB recipients.</td>
+                  </tr>
+                  <tr>
+                    <td><span class="blood-tile-mini">A+</span></td>
+                    <td>A+, AB+</td>
+                    <td>A+, A-, O+, O-</td>
+                    <td>Second most prevalent blood group; high routine transfusion utility.</td>
+                  </tr>
+                  <tr>
+                    <td><span class="blood-tile-mini">B-</span></td>
+                    <td>B-, B+, AB-, AB+</td>
+                    <td>B-, O-</td>
+                    <td>Relatively rare blood type (less than 2% of population).</td>
+                  </tr>
+                  <tr>
+                    <td><span class="blood-tile-mini">B+</span></td>
+                    <td>B+, AB+</td>
+                    <td>B+, B-, O+, O-</td>
+                    <td>Frequently needed for patients undergoing hematology treatments.</td>
+                  </tr>
+                  <tr>
+                    <td><span class="blood-tile-mini">AB-</span></td>
+                    <td>AB-, AB+</td>
+                    <td>AB-, A-, B-, O-</td>
+                    <td>Rarest blood group; universal plasma donor type.</td>
+                  </tr>
+                  <tr>
+                    <td><span class="blood-tile-mini">AB+</span></td>
+                    <td>AB+ only</td>
+                    <td><strong>All Blood Types</strong> (Universal RBC Recipient)</td>
+                    <td><span class="text-green font-bold">Universal Recipient:</span> Can safely accept red blood cells from any blood group.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: REGISTER NEW DONOR                                -->
+  <!-- ======================================================== -->
+  <div class="modal-backdrop" id="registerDonorModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-badge-drop">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+            </svg>
+          </div>
+          <div>
+            <h3>Register Voluntary Blood Donor</h3>
+            <p>Add voluntary donor details with privacy masking protection</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="btnCloseRegisterModal">&times;</button>
+      </div>
+
+      <form id="registerDonorForm" novalidate>
+        <div class="modal-body">
+          <div class="form-grid">
+            
+            <div class="form-group span-2">
+              <label for="regDonorName">Donor Full Name <span class="req">*</span></label>
+              <input type="text" id="regDonorName" placeholder="e.g. Dr. Samuel Vance" required>
+              <span class="field-error" id="errRegDonorName"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="regBloodGroup">Blood Group <span class="req">*</span></label>
+              <select id="regBloodGroup" required>
+                <option value="">Select Blood Group</option>
+                <option value="A+">A Positive (A+)</option>
+                <option value="A-">A Negative (A-)</option>
+                <option value="B+">B Positive (B+)</option>
+                <option value="B-">B Negative (B-)</option>
+                <option value="AB+">AB Positive (AB+)</option>
+                <option value="AB-">AB Negative (AB-)</option>
+                <option value="O+">O Positive (O+)</option>
+                <option value="O-">O Negative (O-)</option>
+              </select>
+              <span class="field-error" id="errRegBloodGroup"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="regAge">Donor Age (18-65) <span class="req">*</span></label>
+              <input type="number" id="regAge" min="18" max="65" placeholder="e.g. 28" required>
+              <span class="field-error" id="errRegAge"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="regPhone">Contact Phone Number <span class="req">*</span></label>
+              <input type="tel" id="regPhone" placeholder="+1 (555) 782-9014" required>
+              <span class="field-error" id="errRegPhone"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="regEmail">Email Address <span class="req">*</span></label>
+              <input type="email" id="regEmail" placeholder="samuel.vance@clinic.org" required>
+              <span class="field-error" id="errRegEmail"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="regCity">City / Residential Area <span class="req">*</span></label>
+              <input type="text" id="regCity" placeholder="e.g. Northwood Metro" required>
+              <span class="field-error" id="errRegCity"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="regLastDonationDate">Previous Donation Date (If Any)</label>
+              <input type="date" id="regLastDonationDate">
+              <small class="text-dim">Leave blank if this is the donor's first time.</small>
+            </div>
+
+            <div class="form-group span-2">
+              <label for="regMedicalNotes">Initial Health / Vitals Note (Optional)</label>
+              <textarea id="regMedicalNotes" rows="2" placeholder="e.g. Standard donor screening passed; no recent international travel or antibiotics."></textarea>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary-crimson" id="btnCancelRegisterModal">Cancel</button>
+          <button type="submit" class="btn btn-crimson" id="btnSubmitRegister">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.2" fill="none">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>Register Donor</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: RECORD DONATION EVENT                             -->
+  <!-- ======================================================== -->
+  <div class="modal-backdrop" id="recordDonationModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-badge-drop">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+            </svg>
+          </div>
+          <div>
+            <h3>Record Blood Donation Event</h3>
+            <p>Log units collected, update donor rest cycle, and increment inventory</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="btnCloseRecordModal">&times;</button>
+      </div>
+
+      <form id="recordDonationForm" novalidate>
+        <div class="modal-body">
+          <div class="form-grid">
+            
+            <div class="form-group span-2">
+              <label for="donationDonorSelect">Select Registered Donor <span class="req">*</span></label>
+              <select id="donationDonorSelect" required>
+                <!-- Populated dynamically via JS with indicative eligibility status -->
+              </select>
+              <span class="field-error" id="errDonationDonor"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="donationDate">Donation Date <span class="req">*</span></label>
+              <input type="date" id="donationDate" required>
+              <span class="field-error" id="errDonationDate"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="donationUnits">Units Donated (Pints / 450 mL) <span class="req">*</span></label>
+              <input type="number" id="donationUnits" min="1" max="2" value="1" required>
+            </div>
+
+            <div class="form-group span-2">
+              <label for="donationCenter">Collection Center / Blood Mobile <span class="req">*</span></label>
+              <select id="donationCenter" required>
+                <option value="Central Metro Red Cross Blood Bank">Central Metro Red Cross Blood Bank</option>
+                <option value="St. Jude Hospital Phlebotomy Unit">St. Jude Hospital Phlebotomy Unit</option>
+                <option value="University Campus Blood Mobile Drive">University Campus Blood Mobile Drive</option>
+                <option value="Downtown Community Donor Center">Downtown Community Donor Center</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="donorHemoglobin">Hemoglobin (g/dL)</label>
+              <input type="text" id="donorHemoglobin" placeholder="e.g. 14.2 g/dL (Min: 12.5)">
+            </div>
+
+            <div class="form-group">
+              <label for="donorBloodPressure">Blood Pressure (mmHg)</label>
+              <input type="text" id="donorBloodPressure" placeholder="e.g. 120/80 mmHg">
+            </div>
+
+            <div class="form-group span-2">
+              <label for="donationNotes">Phlebotomist / Clinical Vitals Notes</label>
+              <textarea id="donationNotes" rows="2" placeholder="e.g. Donation completed without vasovagal reaction; donor rested 15 minutes post-phlebotomy with hydration."></textarea>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary-crimson" id="btnCancelRecordModal">Cancel</button>
+          <button type="submit" class="btn btn-crimson" id="btnSubmitDonation">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.2" fill="none">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>Log Donation & Update Stock</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MODAL: DONOR HISTORY & PROFILE INSPECTION                 -->
+  <!-- ======================================================== -->
+  <div class="modal-backdrop" id="donorDetailModal">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="blood-tile-mini" id="detailBloodType">O-</div>
+          <div>
+            <h3 id="detailDonorName">Samuel Vance</h3>
+            <p id="detailDonorId" class="font-mono text-dim">DON-2026-101</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="btnCloseDetailModal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        
+        <!-- Top Status Bar -->
+        <div class="detail-badge-strip mb-3">
+          <div class="d-item">
+            <span class="label">Eligibility Status:</span>
+            <span class="badge-eligibility eligible" id="detailEligibilityBadge">Eligible to Donate</span>
+          </div>
+          <div class="d-item">
+            <span class="label">Total Lifetime Donations:</span>
+            <strong class="font-mono text-crimson" id="detailLifetimeDonations">4 Units</strong>
+          </div>
+          <div class="d-item ml-auto">
+            <span class="label">Last Donation:</span>
+            <strong class="font-mono" id="detailLastDonation">Aug 14, 2026</strong>
+          </div>
+        </div>
+
+        <!-- Indicative Calculation Callout -->
+        <div class="eligibility-calc-box mb-3">
+          <div class="calc-icon">&#9200;</div>
+          <div>
+            <strong id="detailNextEligibleHeading">Indicative Eligibility Rule (56 Days Rest Cycle):</strong>
+            <p id="detailNextEligibleText">Donor completed their rest cycle and is medically cleared for whole blood intake.</p>
+          </div>
+        </div>
+
+        <!-- Contact & Location Box -->
+        <div class="profile-info-grid mb-3">
+          <div class="p-card">
+            <span class="p-label">Contact Details</span>
+            <p id="detailPhone">+1 (555) 782-9014</p>
+            <p id="detailEmail">samuel.vance@clinic.org</p>
+          </div>
+          <div class="p-card">
+            <span class="p-label">Location & Age</span>
+            <p id="detailCity">Northwood Metro</p>
+            <p id="detailAge">Age: 28 Years</p>
+          </div>
+        </div>
+
+        <!-- Donation History Table -->
+        <h4 class="section-sub-title mb-2">Past Donation Records for this Donor</h4>
+        <div class="table-responsive">
+          <table class="lifedrop-table">
+            <thead>
+              <tr>
+                <th>Event Date</th>
+                <th>Units</th>
+                <th>Collection Facility</th>
+                <th>Vitals Notes</th>
+              </tr>
+            </thead>
+            <tbody id="detailDonationHistoryBody">
+              <!-- Injected via JS -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary-crimson" id="btnCloseDetailFooter">Close</button>
+        <button type="button" class="btn btn-crimson" id="btnDetailRecordDonation">
+          <span>+ Log Donation for this Donor</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Stack -->
+  <div class="toast-stack" id="toastContainer"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
